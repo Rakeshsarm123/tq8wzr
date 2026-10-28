@@ -32,6 +32,32 @@ The dashboard has four sections:
 Controls let the user pick any range of delivery days and any order deadline (UK time, on the day before
 delivery). Every figure on the page comes from the API; nothing is hard-coded in the frontend.
 
+### Architecture
+
+```mermaid
+flowchart TB
+    elexon["Elexon BMRS API<br/>WINDFOR forecasts +<br/>FUELHH wind actuals"]
+    fetch["fetch_data.py<br/>download + quality report"]
+    data[("backend/data<br/>JSON snapshot, committed")]
+
+    subgraph app["WindLens app"]
+        direction LR
+        api["FastAPI backend<br/>analysis.py: forecast at the<br/>deadline, errors, metrics"]
+        ui["React + TypeScript<br/>dashboard (ECharts)"]
+        api -->|"JSON via /api/dashboard"| ui
+    end
+
+    docker["Docker · local<br/>one container serves<br/>the dashboard and /api"]
+    vercel["Vercel · live<br/>CDN serves the dashboard,<br/>a Python function<br/>serves /api"]
+
+    elexon -->|"run once"| fetch --> data -->|"loaded at startup"| app
+    app -->|"docker compose up --build"| docker
+    app -->|"vercel deploy --prod"| vercel
+```
+
+The data is downloaded once and committed, so the app makes no calls to Elexon at runtime. Docker and Vercel run the
+same code: see [Quick start with Docker](#4-quick-start-with-docker) and [Deployment](#5-deployment-vercel).
+
 ## 2. Key findings (January 2026, historical)
 
 Scope: orders placed 1–31 Jan 2026, i.e. **deliveries 2 Jan – 1 Feb 2026** (31 days, 744 hours), with the
