@@ -1,0 +1,281 @@
+:root {
+  --bg: #f3f6fa;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #5b6b82;
+  --line: #dfe6ee;
+  --brand: #0e7490;
+  --forecast: #2563eb;
+  --late: #b45309;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.45;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 18px 32px;
+  background: linear-gradient(90deg, #0b3b53, var(--brand));
+  color: #fff;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.tagline {
+  margin-left: 10px;
+  opacity: 0.8;
+}
+
+.scope {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.page {
+  display: grid;
+  gap: 20px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 32px 8px;
+}
+
+.controls,
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 32px;
+  padding: 16px 20px;
+}
+
+.control label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.control small {
+  margin-left: 6px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+input[type="date"],
+input[type="time"] {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  color: inherit;
+}
+
+.chip {
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f8fafc;
+  color: inherit;
+}
+
+.chip.active {
+  border-color: var(--brand);
+  background: #e6f4f7;
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.link {
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--brand);
+  text-decoration: underline;
+}
+
+.status {
+  min-width: 80px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.alert {
+  padding: 10px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.state {
+  padding: 48px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.card {
+  padding: 20px 24px 24px;
+}
+
+.card h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-size: 15px;
+}
+
+.lead {
+  margin-bottom: 18px;
+  color: var(--muted);
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 10px;
+}
+
+.step {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-top-width: 4px;
+  border-radius: 12px;
+}
+
+.step.used {
+  border-top-color: var(--forecast);
+}
+
+.step.deadline {
+  border-top-color: var(--text);
+}
+
+.step.late {
+  border-top-color: var(--late);
+  background: #fffbf5;
+}
+
+.kicker {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.arrow {
+  align-self: center;
+  color: var(--muted);
+  font-size: 22px;
+}
+
+.groups {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.kpi {
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.value {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.footer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 32px 32px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 820px) {
+  .topbar,
+  .page,
+  .footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .timeline {
+    grid-template-columns: 1fr;
+  }
+
+  .arrow {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+}
