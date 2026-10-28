@@ -3,4 +3,5 @@ services:
     build: .
     image: windlens:latest
     ports:
-      - "8000:8000"
+      # Local machine only: nothing on the network can reach it, so no firewall prompt.
+      - "127.0.0.1:8000:8000"
