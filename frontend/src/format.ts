@@ -15,7 +15,9 @@ export const formatDay = (isoDate: string) => dayFormat.format(noonOf(isoDate));
 export const formatDate = (isoDate: string) => dateFormat.format(noonOf(isoDate));
 export const formatTime = (iso: string) => timeFormat.format(new Date(iso));
 export const formatDayTime = (iso: string) => `${dayFormat.format(new Date(iso))}, ${formatTime(iso)}`;
-export const formatMW = (value: number | null) => (value === null ? "–" : `${wholeNumber.format(value)} MW`);
+export const formatNumber = (value: number) => wholeNumber.format(value);
+export const formatMW = (value: number | null) => (value === null ? "–" : `${formatNumber(value)} MW`);
+export const formatSignedMW = (value: number) => `${value > 0 ? "+" : ""}${formatMW(value)}`;
 export const formatHours = (value: number) => oneDecimal.format(value);
 
 export const ukDate = (iso: string) => dateKeyFormat.format(new Date(iso));

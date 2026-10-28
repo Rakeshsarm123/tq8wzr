@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchDashboard, type Dashboard, type DashboardQuery } from "./api";
+import { fetchDashboard, type Dashboard, type DashboardQuery, type Metrics } from "./api";
 import { Controls, type Selection } from "./components/Controls";
 import { ForecastOverview } from "./components/ForecastOverview";
+import { ForecastVsActual } from "./components/ForecastVsActual";
 import { addDays, formatDate } from "./format";
 
 interface Period {
@@ -15,6 +16,18 @@ export default function App() {
   const [period, setPeriod] = useState<Period | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reference, setReference] = useState<{ deadline: string; metrics: Metrics } | null>(null);
+
+  // Whole-period errors at the same deadline: the historical range drawn in Section 2.
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchDashboard({ deadline: query.deadline }, controller.signal)
+      .then((data) => setReference({ deadline: data.deadline, metrics: data.metrics }))
+      .catch(() => {
+        if (!controller.signal.aborted) setReference(null);
+      });
+    return () => controller.abort();
+  }, [query.deadline]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -68,6 +81,10 @@ export default function App() {
           </p>
         )}
         <ForecastOverview dashboard={dashboard} />
+        <ForecastVsActual
+          dashboard={dashboard}
+          reference={reference?.deadline === dashboard.deadline ? reference.metrics : null}
+        />
       </main>
       <footer className="footer">
         Data: Elexon BMRS. Wind forecasts (WINDFOR) are hourly; actual wind generation (FUELHH) is half-hourly and

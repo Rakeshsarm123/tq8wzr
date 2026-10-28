@@ -254,6 +254,19 @@ input[type="time"] {
   font-weight: 600;
 }
 
+.chart-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin-bottom: 8px;
+}
+
+.note {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .footer {
   max-width: 1180px;
   margin: 0 auto;
