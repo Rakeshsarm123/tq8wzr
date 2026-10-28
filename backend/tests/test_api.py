@@ -7,6 +7,10 @@ from app.main import app
 client = TestClient(app)
 
 
+def test_health():
+    assert client.get("/api/health").json() == {"status": "ok"}
+
+
 def test_defaults_to_every_delivery_day_and_the_0920_deadline():
     body = client.get("/api/dashboard").json()
     assert (len(body["days"]), body["metrics"]["hours"], body["deadline"]) == (31, 744, "09:20:00")
