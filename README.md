@@ -36,21 +36,20 @@ delivery). Every figure on the page comes from the API; nothing is hard-coded in
 
 ```mermaid
 flowchart TB
-    elexon["Elexon BMRS API<br/>WINDFOR forecasts +<br/>FUELHH wind actuals"]
-    fetch["fetch_data.py<br/>download + quality report"]
-    data[("backend/data<br/>JSON snapshot, committed")]
+    subgraph source["Data: fetched once, committed"]
+        direction LR
+        elexon["Elexon BMRS API"] -->|"WINDFOR + FUELHH"| fetch["fetch_data.py"] --> data[("JSON snapshot<br/>backend/data")]
+    end
 
     subgraph app["WindLens app"]
         direction LR
-        api["FastAPI backend<br/>analysis.py: forecast at the<br/>deadline, errors, metrics"]
-        ui["React + TypeScript<br/>dashboard (ECharts)"]
-        api -->|"JSON via /api/dashboard"| ui
+        api["FastAPI<br/>analysis.py"] -->|"JSON via /api/dashboard"| ui["React +<br/>TypeScript<br/>dashboard"]
     end
 
-    docker["Docker · local<br/>one container serves<br/>the dashboard and /api"]
-    vercel["Vercel · live<br/>CDN serves the dashboard,<br/>a Python function<br/>serves /api"]
+    docker["Docker · local<br/>one container<br/>serves both"]
+    vercel["Vercel · live<br/>CDN: dashboard<br/>Python: /api"]
 
-    elexon -->|"run once"| fetch --> data -->|"loaded at startup"| app
+    source -->|"loaded at startup"| app
     app -->|"docker compose up --build"| docker
     app -->|"vercel deploy --prod"| vercel
 ```
