@@ -112,14 +112,14 @@ export function ForecastOverview({ dashboard }: { dashboard: Dashboard }) {
 
       <div className="kpis">
         <div className="kpi">
-          <p className="kicker">Average forecast wind</p>
+          <p className="kicker">Average forecast generation</p>
           <p className="value">{formatMW(averageForecast)}</p>
-          <p className="muted">across {plural(forecasts.length, "delivery hour")}</p>
+          <p className="muted">across the {plural(forecasts.length, "selected delivery hour")}</p>
         </div>
         <div className="kpi">
-          <p className="kicker">Forecast made</p>
+          <p className="kicker">Forecast made ahead of delivery</p>
           <p className="value">{ahead ? `${formatHours(ahead[0])}–${formatHours(ahead[1])} h` : "–"}</p>
-          <p className="muted">before each delivery hour</p>
+          <p className="muted">range across the selected delivery hours</p>
         </div>
         <div className="kpi">
           <p className="kicker">Delivery days</p>
