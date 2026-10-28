@@ -152,7 +152,7 @@ export function Accuracy({ dashboard, reference }: { dashboard: Dashboard; refer
         <Kpi
           label="Historical overforecast buffer"
           value={formatMW(metrics.p90)}
-          note="90th percentile error: planning this far below the forecast would have covered about 9 in 10 of these hours"
+          note="90th percentile of signed errors (forecast − actual): planning this far below the forecast would have covered about 9 in 10 of these past hours"
           whole={whole(reference?.p90 ?? null, formatMW)}
         />
         <Kpi
@@ -173,7 +173,9 @@ export function Accuracy({ dashboard, reference }: { dashboard: Dashboard; refer
           <EChart option={byLead} height={280} label="Mean absolute error and bias by forecast lead time" />
           <p className="note">
             Every forecast for the selected hours, not only the one used at the deadline.
-            {used && ` Darker bars: lead times of the forecast used at the deadline (${formatHours(used[0])}–${formatHours(used[1])} h).`}
+            {used && ` Darker bars: lead times of the forecast used at the deadline (${formatHours(used[0])}–${formatHours(used[1])} h).`}{" "}
+            Descriptive only: each group mixes different forecast runs and hours, so this shows how error varied with
+            lead time, not that lead time alone caused it.
           </p>
         </figure>
       </div>
