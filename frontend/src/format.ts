@@ -21,6 +21,8 @@ export const formatNumber = (value: number) => wholeNumber.format(value);
 export const formatMW = (value: number | null) => (value === null ? "–" : `${formatNumber(value)} MW`);
 export const formatSignedMW = (value: number) => `${value > 0 ? "+" : ""}${formatMW(value)}`;
 export const formatHours = (value: number) => oneDecimal.format(value);
+export const formatPrecise = (value: number) => oneDecimal.format(value);
+export const formatSignedPrecise = (value: number) => `${value > 0 ? "+" : ""}${formatPrecise(value)}`;
 
 export const ukDate = (iso: string) => dateKeyFormat.format(new Date(iso));
 export const addDays = (isoDate: string, days: number) =>

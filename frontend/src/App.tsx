@@ -4,6 +4,7 @@ import { Controls, type Selection } from "./components/Controls";
 import { Accuracy } from "./components/Accuracy";
 import { ForecastOverview } from "./components/ForecastOverview";
 import { ForecastVsActual } from "./components/ForecastVsActual";
+import { HourlyDetails } from "./components/HourlyDetails";
 import { addDays, formatDate } from "./format";
 
 interface Period {
@@ -85,6 +86,7 @@ export default function App() {
         <ForecastOverview dashboard={dashboard} />
         <ForecastVsActual dashboard={dashboard} reference={periodMetrics} />
         <Accuracy dashboard={dashboard} reference={periodMetrics} />
+        <HourlyDetails dashboard={dashboard} reference={periodMetrics} />
       </main>
       <footer className="footer">
         Data: Elexon BMRS. Wind forecasts (WINDFOR) are hourly; actual wind generation (FUELHH) is half-hourly and
