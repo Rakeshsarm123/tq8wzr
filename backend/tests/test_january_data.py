@@ -30,11 +30,12 @@ def test_buyer_always_had_the_0730_forecast_from_the_day_before(january):
 def test_15_jan_noon_matches_the_hand_checked_example(january):
     row = hour(january, "2026-01-15T12:00:00Z")
     assert row.publish_time == datetime(2026, 1, 14, 7, 30, tzinfo=UTC)
-    assert (row.forecast, row.actual, row.error, row.hours_ahead) == (11_049, 9_742, 1_307, 28.5)
+    # actual = average of 12:00-12:30 (9,742 MW) and 12:30-13:00 (9,839 MW)
+    assert (row.forecast, row.actual, row.error, row.hours_ahead) == (11_049, 9_790.5, 1_258.5, 28.5)
 
 
 def test_28_jan_noon_was_the_big_miss(january):
-    assert hour(january, "2026-01-28T12:00:00Z").error == 4_123
+    assert hour(january, "2026-01-28T12:00:00Z").error == 4_173.5
 
 
 def test_latest_forecast_handles_the_missing_1130_run(january):
@@ -46,6 +47,16 @@ def test_latest_forecast_handles_the_missing_1130_run(january):
 
 def test_headline_numbers(january):
     metrics = january.metrics
-    assert metrics.mae == pytest.approx(2_022, abs=1)
-    assert metrics.rmse == pytest.approx(2_497, abs=1)
-    assert metrics.bias == pytest.approx(1_746, abs=1)
+    assert metrics.mae == pytest.approx(2_039, abs=1)
+    assert metrics.rmse == pytest.approx(2_505, abs=1)
+    assert metrics.bias == pytest.approx(1_748, abs=1)
+    assert metrics.p90 == pytest.approx(4_098, abs=1)
+
+
+def test_safety_margin_historically_covered_about_9_hours_in_10(january):
+    margin = january.metrics.p90
+    assert margin is not None
+    errors = [h.error for h in january.hours if h.error is not None]
+    share_short = sum(e > margin for e in errors) / len(errors)
+    # Interpolated percentile over 744 hours: allow one percentage point either way.
+    assert share_short == pytest.approx(0.10, abs=0.01)

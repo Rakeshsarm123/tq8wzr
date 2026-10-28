@@ -18,7 +18,7 @@ def test_a_later_deadline_uses_a_fresher_forecast():
     noon = next(h for h in body["hours"] if h["start_time"].startswith("2026-01-28T12:00"))
     # The 15:30 run lands exactly at the deadline, so the 11:30 one is the newest usable forecast.
     assert datetime.fromisoformat(noon["publish_time"]) == datetime(2026, 1, 27, 11, 30, tzinfo=UTC)
-    assert noon["error"] == 1_522
+    assert noon["error"] == 1_572.5
 
 
 def test_rejects_days_outside_the_data():

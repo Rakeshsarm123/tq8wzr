@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 UK = ZoneInfo("Europe/London")
 HOUR = timedelta(hours=1)
+HALF_HOUR = timedelta(minutes=30)
 LEAD_TIME_BUCKETS = ((0, 6), (6, 12), (12, 24), (24, 36), (36, 48), (48, 72))
 
 
@@ -37,6 +38,11 @@ class WindData:
                 return publish_time, self.runs[publish_time][hour]
         return None
 
+    def hourly_actual(self, hour: datetime) -> float | None:
+        """Average MW over the hour: the mean of its two half-hours, or None if either is missing."""
+        first, second = self.actuals.get(hour), self.actuals.get(hour + HALF_HOUR)
+        return (first + second) / 2 if first is not None and second is not None else None
+
 
 @dataclass(frozen=True)
 class HourResult:
@@ -44,7 +50,7 @@ class HourResult:
     publish_time: datetime | None  # forecast run available at the deadline
     hours_ahead: float | None
     forecast: float | None
-    actual: float | None
+    actual: float | None  # mean of the hour's two half-hourly actuals
     error: float | None  # forecast - actual: positive means the forecast was too high
     latest_publish_time: datetime | None  # newest run published before the hour itself
     latest_forecast: float | None
@@ -58,7 +64,7 @@ class Metrics:
     rmse: float | None = None
     bias: float | None = None
     p10: float | None = None
-    p90: float | None = None  # safety margin: planning for this much less wind covers 9 hours in 10
+    p90: float | None = None  # historical safety margin: planning this far below forecast covered ~9 hours in 10
     max_error: float | None = None
     min_error: float | None = None
     forecast_mean: float | None = None
@@ -128,7 +134,7 @@ def error_by_lead_time(data: WindData, hours: set[datetime]) -> list[LeadTimeRes
     errors: dict[tuple[int, int], list[float]] = {bucket: [] for bucket in LEAD_TIME_BUCKETS}
     for publish_time, run in data.runs.items():
         for hour, forecast in run.items():
-            actual = data.actuals.get(hour)
+            actual = data.hourly_actual(hour)
             if hour not in hours or actual is None:
                 continue
             lead = (hour - publish_time) / HOUR
@@ -167,7 +173,7 @@ def _hour_result(
     data: WindData, hour: datetime, publish_time: datetime | None, run: dict[datetime, float]
 ) -> HourResult:
     forecast = run.get(hour)
-    actual = data.actuals.get(hour)
+    actual = data.hourly_actual(hour)
     latest = data.latest_forecast_before(hour)
     return HourResult(
         start_time=hour,

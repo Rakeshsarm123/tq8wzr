@@ -6,6 +6,7 @@ from app.analysis import HourResult, WindData, analyse, deadline_for, summarise
 
 DAY = date(2026, 1, 15)
 NOON_15_JAN = datetime(2026, 1, 15, 12, tzinfo=UTC)
+HALF_PAST_NOON = datetime(2026, 1, 15, 12, 30, tzinfo=UTC)
 
 
 def utc(day: int, hour: int, minute: int = 0) -> datetime:
@@ -21,7 +22,7 @@ def data() -> WindData:
             utc(15, 11, 30): {NOON_15_JAN: 9_800},
             utc(15, 22, 30): {NOON_15_JAN: 9_750},  # published after the hour had passed
         },
-        actuals={NOON_15_JAN: 9_700},
+        actuals={NOON_15_JAN: 9_600, HALF_PAST_NOON: 9_800},  # hourly average: 9,700
     )
 
 
@@ -58,6 +59,16 @@ def test_forecast_published_exactly_at_the_deadline_is_too_late(data):
 
 def test_error_is_forecast_minus_actual(data):
     assert noon(data).error == 1_300
+
+
+def test_hourly_actual_is_the_average_of_both_half_hours_not_the_sum(data):
+    assert noon(data).actual == 9_700
+
+
+def test_hour_missing_a_half_hour_is_reported_missing(data):
+    del data.actuals[HALF_PAST_NOON]
+    metrics = analyse(data, DAY, DAY, time(9, 20)).metrics
+    assert (noon(data).actual, metrics.hours, metrics.missing) == (None, 0, 24)
 
 
 def test_latest_forecast_ignores_runs_published_after_the_hour(data):
