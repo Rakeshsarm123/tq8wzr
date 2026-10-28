@@ -1,0 +1,6 @@
+services:
+  windlens:
+    build: .
+    image: windlens:latest
+    ports:
+      - "8000:8000"
