@@ -21,6 +21,7 @@ function rangeFor(forecast: number | null, p10: number | null, p90: number | nul
 }
 
 const percent = (part: number, whole: number) => (whole ? `${Math.round((100 * part) / whole)}%` : "–");
+const edge = (error: number) => (error >= 0 ? `${formatMW(error)} below` : `${formatMW(-error)} above`);
 
 function tooltip(hour: HourResult, range: Range, showLatest: boolean): string {
   const muted = (text: string) => `<span style="color:#5b6b82">${text}</span>`;
@@ -39,7 +40,7 @@ function tooltip(hour: HourResult, range: Range, showLatest: boolean): string {
     lines.push(`${RANGE}: ${formatMW(range.low)} – ${formatMW(range.high)}`);
   }
   if (showLatest && hour.latest_forecast !== null && hour.latest_publish_time) {
-    lines.push(`${LATEST}: ${formatMW(hour.latest_forecast)} ${muted(`(published ${formatTime(hour.latest_publish_time)})`)}`);
+    lines.push(`${LATEST}: ${formatMW(hour.latest_forecast)} ${muted(`(published ${formatDayTime(hour.latest_publish_time)})`)}`);
   }
   return lines.join("<br/>");
 }
@@ -148,13 +149,13 @@ export function ForecastVsActual({ dashboard, reference }: { dashboard: Dashboar
       </div>
       <EChart option={option} height={400} label="Hourly forecast at the deadline compared with actual wind generation" />
       <p className="note">
-        {reference && inside !== null && (
+        {reference && p10 !== null && p90 !== null && inside !== null && (
           <>
-            Shaded band: each hour's forecast minus the 10th–90th percentile error of all {reference.hours} analysed
-            delivery hours at this deadline, so its lower edge is the historical overforecast buffer (
-            {formatMW(reference.p90)} below the forecast). {inside} of the {errors.length} selected hours (
-            {percent(inside, errors.length)}) fell inside it. It describes the analysed period and is not a guaranteed
-            range for future hours.{" "}
+            Shaded band: the central 80% of historical errors (10th–90th percentile over all {reference.hours} analysed
+            hours at this deadline), applied to each hour's forecast. It runs from {edge(p90)} the forecast to{" "}
+            {edge(p10)} it. Its lower edge alone is the one-sided historical overforecast buffer: actual wind stayed
+            above it in about 9 of 10 analysed hours. {inside} of the {errors.length} selected hours (
+            {percent(inside, errors.length)}) fell inside the band. Historical, not a guarantee for future hours.{" "}
           </>
         )}
         Click “{LATEST}” in the legend to see how much a fresher forecast, published closer to each hour, would have
