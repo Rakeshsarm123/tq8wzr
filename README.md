@@ -3,7 +3,7 @@
 WindLens shows a UK electricity buyer **which wind forecast they actually had when they placed their day-ahead
 order**, and **how wrong that forecast turned out to be**, so they can decide how much extra power to buy.
 
-**Live app:** _link added after deployment_
+**Live app:** https://tq8wzr.vercel.app (no login needed; see [Deployment](#5-deployment-vercel))
 
 ---
 
@@ -86,7 +86,37 @@ Stop with `docker compose down`.
 - **Local only:** [compose.yaml](compose.yaml) publishes the port on `127.0.0.1`, so the app is not exposed to your
   network.
 
-## 5. Local development
+## 5. Deployment (Vercel)
+
+The live app at **https://tq8wzr.vercel.app** runs on Vercel's free Hobby plan. Heroku, the other option in the
+brief, needs a paid plan, so it was not used. Docker (section 4) is still the one-command way to run the app locally.
+
+Vercel does not run Docker images, so it deploys the same code another way, with no code changes:
+
+- It builds the dashboard (`npm ci && npm run build`) and runs the FastAPI app as a Python function.
+- At build time it finds the dashboard's static-file mount in [main.py](backend/app/main.py) and serves those files
+  from its CDN. Requests to `/api/...` still reach FastAPI, because the API routes are declared before that mount.
+- The data snapshot is deployed with the code, so the live app makes no calls to Elexon.
+
+| File | Role |
+|---|---|
+| [pyproject.toml](pyproject.toml) | Python version (3.14), FastAPI and tzdata pinned to the same versions as `backend/requirements.txt`, and where the app is (`backend.app.main:app`) |
+| [vercel.json](vercel.json) | The dashboard build command, and the files kept out of the Python function (tests, scripts, docs, frontend source and `node_modules`) |
+| [.vercelignore](.vercelignore) | Keeps local-only folders (`node_modules`, `.venv`, caches, the local dashboard build) and `docs` out of the upload |
+
+To deploy your own copy (needs a free Vercel account and Node.js), run from the repository root:
+
+```powershell
+npm install -g vercel
+vercel login
+vercel deploy --prod
+```
+
+The first deploy asks you to create or link a Vercel project. The live app was checked without logging in: the page
+and its assets load, the API returns the same figures as the local and Docker runs, invalid dates get the same clear
+errors, and only the dashboard and the API can be reached (source and data files cannot).
+
+## 6. Local development
 
 Prerequisites: Python 3.14 and Node.js 22 (the versions tested). The commands below are for Windows PowerShell;
 on macOS or Linux use `.venv/bin/python` instead of `.venv\Scripts\python`.
@@ -119,7 +149,7 @@ python backend/scripts/fetch_data.py
 It downloads the forecasts and actuals again, saves them to `backend/data/` with their source URL and download
 time, and prints a short data-quality report (runs per time of day, gaps, duplicates).
 
-## 6. Tests
+## 7. Tests
 
 **Backend (31 tests):**
 
@@ -145,7 +175,7 @@ npm test
 `npm run build` also type-checks the whole frontend (TypeScript strict mode). All of these commands were verified on
 a fresh clone of the repository.
 
-## 7. Data and methodology
+## 8. Data and methodology
 
 ### Data: Elexon BMRS only
 
@@ -191,13 +221,16 @@ Times are stored in UTC and displayed in UK time (Europe/London). In January the
 **API:** `GET /api/dashboard?start=YYYY-MM-DD&end=YYYY-MM-DD&deadline=HH:MM` (all optional; defaults are the whole
 period and 09:20) and `GET /api/health`.
 
-## 8. Project structure
+## 9. Project structure
 
 ```text
 .
 ├── Dockerfile                  Two-stage image: builds the dashboard, then runs FastAPI
 ├── compose.yaml                One-command local run (docker compose up --build)
 ├── .dockerignore               Keeps node_modules, .venv and .git out of the image
+├── pyproject.toml              Vercel: Python version, dependencies and the app's entry point
+├── vercel.json                 Vercel: dashboard build command and what stays out of the function
+├── .vercelignore               Vercel: keeps local folders out of the upload
 ├── backend/
 │   ├── app/
 │   │   ├── analysis.py         Core rules: forecast at the deadline, hourly actuals, errors, metrics
@@ -225,7 +258,7 @@ period and 09:20) and `GET /api/health`.
 └── docs/screenshots/           Images used in this README
 ```
 
-## 9. Limitations and assumptions
+## 10. Limitations and assumptions
 
 - **One historical month.** All results describe 744 hours in January 2026 and are calculated over that same data.
   They are not forecasts of future accuracy and give no guarantee for future hours.
@@ -246,12 +279,12 @@ period and 09:20) and `GET /api/health`.
 - **Out of scope:** user accounts, live data beyond January, other fuel types, prices, and building a new forecast
   model.
 
-## 10. AI-tool disclosure
+## 11. AI-tool disclosure
 
 AI tools were used while building this project:
 
 - **GitHub Copilot in VS Code (agent mode)** helped plan the work, research the Elexon datasets and GB auction
-  times, write the code, tests and this README, and run checks in the terminal and browser.
+  times, write the code, tests and this README, run checks in the terminal and browser, and deploy to Vercel.
 - **ChatGPT** was used to review the plan, the analysis decisions and the results at each step.
 
 How the AI output was checked:
@@ -259,7 +292,8 @@ How the AI output was checked:
 - Every change was reviewed before it was committed.
 - The calculations are covered by 31 backend tests, including hand-checked examples and tests against the real
   January data, plus 7 frontend tests.
-- Dashboard figures were compared with the API's figures in a browser, and the Docker image was tested end to end.
+- Dashboard figures were compared with the API's figures in a browser, and both the Docker image and the live
+  Vercel deployment were tested end to end.
 - Reviews changed the design several times: actuals are averaged over the hour instead of using the first
   half-hour, a forecast published exactly at the deadline counts as too late, and the historical band uses the
   whole period so a day is not judged against its own errors.
