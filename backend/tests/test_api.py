@@ -23,3 +23,9 @@ def test_a_later_deadline_uses_a_fresher_forecast():
 
 def test_rejects_days_outside_the_data():
     assert client.get("/api/dashboard", params={"start": "2025-12-01"}).status_code == 422
+
+
+def test_explains_a_reversed_range():
+    response = client.get("/api/dashboard", params={"start": "2026-01-30", "end": "2026-01-28"})
+    assert response.status_code == 422
+    assert response.json()["detail"] == "The first delivery day must be on or before the last one."
