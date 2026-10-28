@@ -1,4 +1,4 @@
-import { LineChart, type LineSeriesOption } from "echarts/charts";
+import { BarChart, LineChart, type BarSeriesOption, type LineSeriesOption } from "echarts/charts";
 import {
   DataZoomComponent,
   GridComponent,
@@ -13,10 +13,15 @@ import { init, use, type ComposeOption, type ECharts } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "react";
 
-use([LineChart, GridComponent, TooltipComponent, LegendComponent, DataZoomComponent, CanvasRenderer]);
+use([BarChart, LineChart, GridComponent, TooltipComponent, LegendComponent, DataZoomComponent, CanvasRenderer]);
 
 export type ChartOption = ComposeOption<
-  LineSeriesOption | GridComponentOption | TooltipComponentOption | LegendComponentOption | DataZoomComponentOption
+  | BarSeriesOption
+  | LineSeriesOption
+  | GridComponentOption
+  | TooltipComponentOption
+  | LegendComponentOption
+  | DataZoomComponentOption
 >;
 
 export function EChart({ option, height, label }: { option: ChartOption; height: number; label: string }) {

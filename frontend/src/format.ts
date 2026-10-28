@@ -2,6 +2,7 @@ const UK = "Europe/London";
 const DAY_MS = 86_400_000;
 
 const dayFormat = new Intl.DateTimeFormat("en-GB", { timeZone: UK, weekday: "short", day: "numeric", month: "short" });
+const shortDayFormat = new Intl.DateTimeFormat("en-GB", { timeZone: UK, day: "numeric", month: "short" });
 const dateFormat = new Intl.DateTimeFormat("en-GB", { timeZone: UK, day: "numeric", month: "short", year: "numeric" });
 const timeFormat = new Intl.DateTimeFormat("en-GB", { timeZone: UK, hour: "2-digit", minute: "2-digit" });
 const dateKeyFormat = new Intl.DateTimeFormat("en-CA", { timeZone: UK, year: "numeric", month: "2-digit", day: "2-digit" });
@@ -12,6 +13,7 @@ const oneDecimal = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 1 });
 const noonOf = (isoDate: string) => new Date(`${isoDate}T12:00:00Z`);
 
 export const formatDay = (isoDate: string) => dayFormat.format(noonOf(isoDate));
+export const formatShortDay = (isoDate: string) => shortDayFormat.format(noonOf(isoDate));
 export const formatDate = (isoDate: string) => dateFormat.format(noonOf(isoDate));
 export const formatTime = (iso: string) => timeFormat.format(new Date(iso));
 export const formatDayTime = (iso: string) => `${dayFormat.format(new Date(iso))}, ${formatTime(iso)}`;

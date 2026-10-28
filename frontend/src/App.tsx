@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchDashboard, type Dashboard, type DashboardQuery, type Metrics } from "./api";
 import { Controls, type Selection } from "./components/Controls";
+import { Accuracy } from "./components/Accuracy";
 import { ForecastOverview } from "./components/ForecastOverview";
 import { ForecastVsActual } from "./components/ForecastVsActual";
 import { addDays, formatDate } from "./format";
@@ -53,6 +54,7 @@ export default function App() {
   }
 
   const change = (update: Partial<Selection>) => setQuery((current) => ({ ...current, ...update }));
+  const periodMetrics = reference?.deadline === dashboard.deadline ? reference.metrics : null;
 
   return (
     <>
@@ -81,10 +83,8 @@ export default function App() {
           </p>
         )}
         <ForecastOverview dashboard={dashboard} />
-        <ForecastVsActual
-          dashboard={dashboard}
-          reference={reference?.deadline === dashboard.deadline ? reference.metrics : null}
-        />
+        <ForecastVsActual dashboard={dashboard} reference={periodMetrics} />
+        <Accuracy dashboard={dashboard} reference={periodMetrics} />
       </main>
       <footer className="footer">
         Data: Elexon BMRS. Wind forecasts (WINDFOR) are hourly; actual wind generation (FUELHH) is half-hourly and

@@ -267,6 +267,42 @@ input[type="time"] {
   font-size: 13px;
 }
 
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.kpis.five {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  margin: 0 0 20px;
+}
+
+.compare {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 20px;
+}
+
+.charts figure {
+  margin: 0;
+}
+
+.charts figcaption {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
 .footer {
   max-width: 1180px;
   margin: 0 auto;
